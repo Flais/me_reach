@@ -5,8 +5,8 @@ import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_enti
 import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
 
 
-/// This use case gets the data from a local data source, saves the fetched result
-/// in a global variable that will be used by others use cases and finally
+/// This use case gets the data from data source, saves the fetched result
+/// in a cache variable that will be used by others use cases and finally
 /// returns the value fetched
 class GetServersListUseCase {
   final IServersRepository _repository;
@@ -15,13 +15,17 @@ class GetServersListUseCase {
       : this._repository = repository;
 
   Future<List<IServerEntity>> execute() async {
-    final List<IServerEntity> _listOfServersEntities =
+
+    // This is how the Dependence Injector is invoked
+    final di = Modular.get<AppController>();
+
+    final List<IServerEntity> _serversList =
         await _repository.getServers();
 
 
-    // This is how the Dependence Injector is invoked
-    Modular.get<AppController>().serversList = _listOfServersEntities;
+    //Update de cache variable with persistence data
+    di.serversList = _serversList;
 
-    return _listOfServersEntities;
+    return _serversList;
   }
 }

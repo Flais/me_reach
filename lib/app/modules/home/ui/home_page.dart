@@ -14,7 +14,32 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: body(),
+      body: getServersListFutureBuilder(),
+    );
+  }
+
+  Widget getServersListFutureBuilder() {
+    final _getServers = controller.getServers();
+
+    return FutureBuilder(
+      future: _getServers,
+      // ignore: missing_return
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+            throw UnimplementedError();
+            break;
+          case ConnectionState.waiting:
+            return Container();
+            break;
+          case ConnectionState.active:
+            throw UnimplementedError();
+            break;
+          case ConnectionState.done:
+            return body();
+            break;
+        }
+      },
     );
   }
 
@@ -32,14 +57,16 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                   child: Text('Add'),
                   onPressed: () {
                     controller.addServer(
-                        domainServer: controller.domainTextEditingController.text);
+                        domainServer:
+                            controller.domainTextEditingController.text);
                   },
                 ),
                 RaisedButton(
                   child: Text('Remove'),
                   onPressed: () {
                     controller.removeServer(
-                        domainServer: controller.domainTextEditingController.text);
+                        domainServer:
+                            controller.domainTextEditingController.text);
                   },
                 ),
               ],
@@ -53,8 +80,10 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                         child: Column(
                           children: [
                             Text(controller.listOfServers[index].domain),
-                            Text(controller.listOfServers[index].isOnline.toString()),
-                            Text(controller.listOfServers[index].lastUpdate.toString()),
+                            Text(controller.listOfServers[index].isOnline
+                                .toString()),
+                            Text(controller.listOfServers[index].lastUpdate
+                                .toString()),
                           ],
                         ),
                       );

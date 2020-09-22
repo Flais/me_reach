@@ -12,7 +12,7 @@ class AddServerUseCase {
   AddServerUseCase({@required IServersRepository repository})
       : this._repository = repository;
 
-  Future<List<ServerEntity>> execute({@required String serverDomain}) async {
+  Future<List<IServerEntity>> execute({@required String serverDomain}) async {
     // This is how the Dependence Injector is invoked
     final di = Modular.get<AppController>();
 
@@ -21,7 +21,6 @@ class AddServerUseCase {
       serversList: di.serversList,
       serverDomain: serverDomain,
     )) throw ServerAlreadyExistsException();
-
 
     //Check the status of the server
     final _serverStatus =

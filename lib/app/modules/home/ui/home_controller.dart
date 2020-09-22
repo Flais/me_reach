@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
+import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
 import 'package:me_reach/app/modules/home/infra/entities/server_entity.dart';
 import 'package:mobx/mobx.dart';
@@ -15,10 +17,17 @@ abstract class _HomeControllerBase with Store {
       TextEditingController();
 
   @observable
-  ObservableList<ServerEntity> listOfServers = <ServerEntity>[].asObservable();
+  ObservableList<IServerEntity> listOfServers = <IServerEntity>[].asObservable();
 
   final addServerUseCase = Modular.get<AddServerUseCase>();
   final removeServerUseCase = Modular.get<RemoveServerUseCase>();
+  final getServersListUseCase = Modular.get<GetServersListUseCase>();
+
+  Future getServers() async{
+    getServersListUseCase
+        .execute()
+        .then((value) => listOfServers = value.asObservable());
+  }
 
   @action
   addServer({@required String domainServer}) async {
