@@ -38,7 +38,7 @@ abstract class _HomeControllerBase with Store {
   @action
   removeServer({@required String domainServer}) async {
     removeServerUseCase
-        .execute(serversDomain: domainServer)
+        .execute(serverDomain: domainServer)
         .then((value) => listOfServers = value.asObservable());
   }
 }

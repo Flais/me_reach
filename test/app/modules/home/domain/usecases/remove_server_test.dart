@@ -19,7 +19,7 @@ void main() {
 
   test('Should return a instance of [List<ServerEntity>]', () async {
     //Act
-    final _tResult = await useCase.execute(serversDomain: 'any.com');
+    final _tResult = await useCase.execute(serverDomain: 'any.com');
 
     //Expect
     expect(_tResult, isInstanceOf<List<ServerEntity>>());

@@ -23,16 +23,16 @@ class HomeModule extends ChildModule {
         //Drivers
         Bind((i) => ServerStatusChecker()),
 
-
         //Repositories
         Bind((i) => ServersRepository(
             dataSource: i.get<IServersDataSource>(),
-            serverStatusCheckerDriver: i.get<IServerStatusCheckerDriver>())),
+            serverStatusCheckerDriver: i.get<IServerStatusCheckerDriver>(),
+        )),
 
         //UseCases
         Bind((i) => AddServerUseCase(repository: i.get<IServersRepository>())),
         Bind((i) => GetServersListUseCase(repository: i.get<IServersRepository>())),
-        Bind((i) => RemoveServerUseCase()),
+        Bind((i) => RemoveServerUseCase(repository: i.get<IServersRepository>())),
       ];
 
   @override

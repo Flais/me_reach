@@ -44,8 +44,11 @@ class HiveServersLocalDataSource implements IServersDataSource {
   }
 
   @override
-  Future<void> removeServerFromDatabase({String serverDomain}) {
-    // TODO: implement removeServerFromDatabase
-    throw UnimplementedError();
+  Future<void> removeServerFromDatabase({String serverDomain}) async {
+    await _openDatabase();
+
+    this._serversBox.delete(serverDomain);
+
+    await _closeDatabase();
   }
 }
