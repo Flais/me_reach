@@ -20,7 +20,7 @@ class GetServersListUseCase {
     final di = Modular.get<AppController>();
 
     final List<IServerEntity> _serversList =
-        await _repository.getServers();
+        await _repository.getServersFromDatabase();
 
 
     //Update de cache variable with persistence data

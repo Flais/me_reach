@@ -3,7 +3,6 @@ import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_enti
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
-import 'package:me_reach/app/modules/home/infra/entities/server_entity.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -23,7 +22,7 @@ abstract class _HomeControllerBase with Store {
   final removeServerUseCase = Modular.get<RemoveServerUseCase>();
   final getServersListUseCase = Modular.get<GetServersListUseCase>();
 
-  Future getServers() async{
+  Future initApp() async{
     getServersListUseCase
         .execute()
         .then((value) => listOfServers = value.asObservable());

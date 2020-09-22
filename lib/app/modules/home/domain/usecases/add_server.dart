@@ -32,6 +32,8 @@ class AddServerUseCase {
       lastUpdate: DateTime.now(),
     );
 
+    _repository.saveServerOnDatabase(serverDomain: serverDomain);
+
     //Save the ServerEntity in the cache variable
     di.serversList.add(_server);
 

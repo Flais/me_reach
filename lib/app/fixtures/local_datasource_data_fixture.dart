@@ -1,6 +1,6 @@
-final List<Map<String, dynamic>> localDataSourceDataFixture = [
-  {'domain': 'google.com'},
-  {'domain': 'facebook.com'},
+final List<String> localDataSourceDataFixture = [
+  'google.com',
+  'facebook.com',
 ];
 
-final List<Map<String, dynamic>> emptyLocalDataSourceDataFixture = [];
+final List<String> emptyLocalDataSourceDataFixture = [];

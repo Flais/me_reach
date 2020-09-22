@@ -3,27 +3,27 @@ import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_enti
 import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
 import 'package:me_reach/app/modules/home/infra/entities/server_entity.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/drivers_interfaces/server_status_checker_interface.dart';
-import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/get_servers_list_local_datasource_interface.dart';
+import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/servers_datasource_interface.dart';
 
 class ServersRepository implements IServersRepository {
-  final IGetServersListLocalDataSource _getServersListDataSource;
+  final IServersDataSource _dataSource;
   final IServerStatusCheckerDriver _serverStatusCheckerDriver;
 
   ServersRepository(
-      {@required IGetServersListLocalDataSource getServersListDataSource,
+      {@required IServersDataSource dataSource,
       @required IServerStatusCheckerDriver serverStatusCheckerDriver})
-      : this._getServersListDataSource = getServersListDataSource,
+      : this._dataSource = dataSource,
         this._serverStatusCheckerDriver = serverStatusCheckerDriver;
 
   @override
-  Future<List<IServerEntity>> getServers() async {
-    final _response = await this._getServersListDataSource.getLocalData();
+  Future<List<IServerEntity>> getServersFromDatabase() async {
+    final _response = await this._dataSource.getServersFromDatabase();
 
     //Converts the data received from dataSource to a List<IServerEntity>
     final List<IServerEntity> _entityReturn = _response
         .map(
           (serverData) => ServerEntity(
-            domain: serverData['domain'],
+            domain: serverData,
             lastUpdate: DateTime.now(),
             isOnline: true,
           ),
@@ -38,5 +38,16 @@ class ServersRepository implements IServersRepository {
     final _serverStatus = await _serverStatusCheckerDriver.checkServerStatus(
         serverDomain: serverDomain);
     return _serverStatus;
+  }
+
+  @override
+  Future<void> removeServerFromDatabase({String serverDomain}) {
+    // TODO: implement removeServerFromDatabase
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> saveServerOnDatabase({String serverDomain}) async{
+    _dataSource.saveServerOnDatabase(serverDomain: serverDomain);
   }
 }

@@ -19,10 +19,10 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   }
 
   Widget getServersListFutureBuilder() {
-    final _getServers = controller.getServers();
+    final initApp = controller.initApp();
 
     return FutureBuilder(
-      future: _getServers,
+      future: initApp,
       // ignore: missing_return
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         switch (snapshot.connectionState) {

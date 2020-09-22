@@ -1,23 +1,51 @@
+import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
-import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/get_servers_list_local_datasource_interface.dart';
+import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/servers_datasource_interface.dart';
 import 'package:path_provider/path_provider.dart';
 
-class HiveGetServersListLocalDataSource
-    implements IGetServersListLocalDataSource {
-  @override
-  Future<List<Map<String, dynamic>>> getLocalData() async {
+class HiveServersLocalDataSource implements IServersDataSource {
+  Box _serversBox;
 
-    //Init the connection with Hive DataBase
+  Future<void> _openDatabase() async {
     final _appDocumentDirectory = await getApplicationDocumentsDirectory();
     Hive.init(_appDocumentDirectory.path);
 
-    final _serversBox = await Hive.openBox('servers');
+    _serversBox = await Hive.openBox('servers');
+  }
 
-    final List<dynamic> serversList = _serversBox.get('servers');
+  Future<void> _closeDatabase() async {
+    await _serversBox.close();
+  }
+
+  @override
+  Future<List<String>> getServersFromDatabase() async {
+    await _openDatabase();
+
+    final serversList = this._serversBox.toMap();
 
     // Converts the List<dynamic> to a List<Map<String, dynamic>>
-    final List<Map<String, dynamic>> _convertedList = serversList.map((e) => {'domain' : e['domain']}).toList();
+    final List<String> _convertedServersList = <String>[];
+    serversList.forEach((serverDomain, _) {
+      _convertedServersList.add(serverDomain);
+    });
 
-    return _convertedList;
+    await _closeDatabase();
+
+    return _convertedServersList;
+  }
+
+  @override
+  Future<void> saveServerOnDatabase({@required String serverDomain}) async {
+    await _openDatabase();
+
+    this._serversBox.put(serverDomain, serverDomain);
+
+    await _closeDatabase();
+  }
+
+  @override
+  Future<void> removeServerFromDatabase({String serverDomain}) {
+    // TODO: implement removeServerFromDatabase
+    throw UnimplementedError();
   }
 }

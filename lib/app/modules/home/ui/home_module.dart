@@ -5,7 +5,7 @@ import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
 import 'package:me_reach/app/modules/home/external/drivers/server_status_checker.dart';
 import 'package:me_reach/app/modules/home/external/services/hive_get_servers_list_local_datasource.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/drivers_interfaces/server_status_checker_interface.dart';
-import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/get_servers_list_local_datasource_interface.dart';
+import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/servers_datasource_interface.dart';
 import 'package:me_reach/app/modules/home/infra/repositories/servers_repository.dart';
 
 import 'home_controller.dart';
@@ -18,7 +18,7 @@ class HomeModule extends ChildModule {
   List<Bind> get binds => [
         $HomeController,
         //DataSources
-        Bind((i) => HiveGetServersListLocalDataSource()),
+        Bind((i) => HiveServersLocalDataSource()),
 
         //Drivers
         Bind((i) => ServerStatusChecker()),
@@ -26,7 +26,7 @@ class HomeModule extends ChildModule {
 
         //Repositories
         Bind((i) => ServersRepository(
-            getServersListDataSource: i.get<IGetServersListLocalDataSource>(),
+            dataSource: i.get<IServersDataSource>(),
             serverStatusCheckerDriver: i.get<IServerStatusCheckerDriver>())),
 
         //UseCases
