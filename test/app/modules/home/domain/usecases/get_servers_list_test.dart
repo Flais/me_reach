@@ -4,7 +4,7 @@ import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_enti
 import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/get_servers_list_local_datasource_interface.dart';
-import 'package:me_reach/app/modules/home/infra/repositories/get_servers_list_repository.dart';
+import 'package:me_reach/app/modules/home/infra/repositories/servers_repository.dart';
 import 'package:mockito/mockito.dart';
 
   class MockGetServersListLocalDataSource extends Mock
@@ -12,12 +12,12 @@ import 'package:mockito/mockito.dart';
 
   void main() {
   GetServersListUseCase useCase;
-  IGetServersListRepository repository;
+  IServersRepository repository;
   IGetServersListLocalDataSource dataSource;
 
   setUp(() {
   dataSource = MockGetServersListLocalDataSource();
-  repository = GetServersListRepository(dataSource: dataSource);
+  repository = ServersRepository(dataSource: dataSource);
   useCase = GetServersListUseCase(repository: repository);
   });
 

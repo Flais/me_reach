@@ -50,7 +50,13 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                     itemCount: controller.listOfServers.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        child: Text(controller.listOfServers[index].domain),
+                        child: Column(
+                          children: [
+                            Text(controller.listOfServers[index].domain),
+                            Text(controller.listOfServers[index].isOnline.toString()),
+                            Text(controller.listOfServers[index].lastUpdate.toString()),
+                          ],
+                        ),
                       );
                     });
               }),

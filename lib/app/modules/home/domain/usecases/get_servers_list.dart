@@ -9,14 +9,14 @@ import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_ser
 /// in a global variable that will be used by others use cases and finally
 /// returns the value fetched
 class GetServersListUseCase {
-  final IGetServersListRepository _repository;
+  final IServersRepository _repository;
 
-  GetServersListUseCase({@required IGetServersListRepository repository})
+  GetServersListUseCase({@required IServersRepository repository})
       : this._repository = repository;
 
   Future<List<IServerEntity>> execute() async {
     final List<IServerEntity> _listOfServersEntities =
-        await _repository.getServersEntities();
+        await _repository.getServers();
 
 
     // This is how the Dependence Injector is invoked

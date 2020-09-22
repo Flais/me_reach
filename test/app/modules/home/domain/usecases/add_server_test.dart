@@ -23,5 +23,8 @@ void main() {
 
     //Expect
     expect(_tResult, isInstanceOf<List<ServerEntity>>());
+    expect(_tResult[0].domain, isInstanceOf<String>());
+    expect(_tResult[0].lastUpdate, isInstanceOf<String>());
+    expect(_tResult[0].isOnline, isInstanceOf<bool>());
   });
 }

@@ -1,8 +1,9 @@
 abstract class IServerEntity {
   String domain;
+  DateTime lastUpdate;
   bool isOnline;
 
   Map<String, dynamic> toJson(IServerEntity serverEntity);
 
-  IServerEntity formJson(Map<String, dynamic> json);
+  IServerEntity fromJson(Map<String, dynamic> json);
 }

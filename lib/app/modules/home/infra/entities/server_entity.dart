@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 
 class ServerEntity implements IServerEntity {
@@ -8,10 +8,16 @@ class ServerEntity implements IServerEntity {
   @override
   bool isOnline;
 
-  ServerEntity({@required this.domain});
+  @override
+  DateTime lastUpdate;
+
+  ServerEntity(
+      {@required this.domain,
+      @required this.isOnline,
+      @required this.lastUpdate});
 
   @override
-  IServerEntity formJson(Map<String, dynamic> json) {
+  IServerEntity fromJson(Map<String, dynamic> json) {
     throw UnimplementedError();
   }
 

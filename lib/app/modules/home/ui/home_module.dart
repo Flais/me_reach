@@ -1,8 +1,11 @@
+import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
+import 'package:me_reach/app/modules/home/external/drivers/server_status_checker.dart';
 import 'package:me_reach/app/modules/home/external/services/hive_get_servers_list_local_datasource.dart';
+import 'package:me_reach/app/modules/home/infra/external_interfaces/drivers_interfaces/server_status_checker_interface.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/get_servers_list_local_datasource_interface.dart';
-import 'package:me_reach/app/modules/home/infra/repositories/get_servers_list_repository.dart';
+import 'package:me_reach/app/modules/home/infra/repositories/servers_repository.dart';
 
 import 'home_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -16,11 +19,17 @@ class HomeModule extends ChildModule {
         //DataSources
         Bind((i) => HiveGetServersListLocalDataSource()),
 
+        //Drivers
+        Bind((i) => ServerStatusChecker()),
+
+
         //Repositories
-        Bind((i) => GetServersListRepository(dataSource: i.get<IGetServersListLocalDataSource>())),
+        Bind((i) => ServersRepository(
+            getServersListDataSource: i.get<IGetServersListLocalDataSource>(),
+            serverStatusCheckerDriver: i.get<IServerStatusCheckerDriver>())),
 
         //UseCases
-        Bind((i) => AddServerUseCase()),
+        Bind((i) => AddServerUseCase(repository: i.get<IServersRepository>())),
         Bind((i) => RemoveServerUseCase()),
       ];
 
