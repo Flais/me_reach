@@ -5,9 +5,9 @@ class HiveGetServersListLocalDataSource
   @override
   Future<List<Map<String, dynamic>>> getLocalData() {
     return Future.value([
-      {'name': 'joão'},
-      {'name': 'maria'},
-      {'name': 'josé'},
+      {'domain': 'google.com'},
+      {'domain': 'facebook.com'},
+      {'domain': 'youtube.com'},
     ]);
   }
 }
