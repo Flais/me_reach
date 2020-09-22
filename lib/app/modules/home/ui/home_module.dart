@@ -1,4 +1,5 @@
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
+import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
 import 'package:me_reach/app/modules/home/external/services/hive_get_servers_list_local_datasource.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/get_servers_list_local_datasource_interface.dart';
 import 'package:me_reach/app/modules/home/infra/repositories/get_servers_list_repository.dart';
@@ -20,6 +21,7 @@ class HomeModule extends ChildModule {
 
         //UseCases
         Bind((i) => AddServerUseCase()),
+        Bind((i) => RemoveServerUseCase()),
       ];
 
   @override

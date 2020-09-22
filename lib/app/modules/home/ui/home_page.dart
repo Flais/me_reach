@@ -26,12 +26,23 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
             TextFormField(
               controller: controller.domainTextEditingController,
             ),
-            RaisedButton(
-              child: Text('Add'),
-              onPressed: () {
-                controller.addServer(
-                    domainServer: controller.domainTextEditingController.text);
-              },
+            Row(
+              children: [
+                RaisedButton(
+                  child: Text('Add'),
+                  onPressed: () {
+                    controller.addServer(
+                        domainServer: controller.domainTextEditingController.text);
+                  },
+                ),
+                RaisedButton(
+                  child: Text('Remove'),
+                  onPressed: () {
+                    controller.removeServer(
+                        domainServer: controller.domainTextEditingController.text);
+                  },
+                ),
+              ],
             ),
             Expanded(
               child: Observer(builder: (_) {
