@@ -23,7 +23,7 @@ abstract class _HomeControllerBase with Store {
   @action
   addServer({@required String domainServer}) async {
     addServerUseCase
-        .execute(serversDomain: domainServer)
+        .execute(serverDomain: domainServer)
         .then((value) => listOfServers = value.asObservable());
   }
 

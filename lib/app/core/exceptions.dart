@@ -1,0 +1,1 @@
+class ServerAlreadyExistsException implements Exception{}

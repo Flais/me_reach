@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:me_reach/app/app_controller.dart';
+import 'package:me_reach/app/core/exceptions.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
 import 'package:me_reach/app/modules/home/infra/entities/server_entity.dart';
@@ -11,22 +12,39 @@ class AddServerUseCase {
   AddServerUseCase({@required IServersRepository repository})
       : this._repository = repository;
 
-  Future<List<ServerEntity>> execute({@required String serversDomain}) async {
+  Future<List<ServerEntity>> execute({@required String serverDomain}) async {
     // This is how the Dependence Injector is invoked
     final di = Modular.get<AppController>();
 
+    //Check if the server already exists in the cache variable
+    if (_checkServerAlreadyExists(
+      serversList: di.serversList,
+      serverDomain: serverDomain,
+    )) throw ServerAlreadyExistsException();
+
+
+    //Check the status of the server
     final _serverStatus =
-        await _repository.checkServerStatus(serverDomain: serversDomain);
+        await _repository.checkServerStatus(serverDomain: serverDomain);
 
     final IServerEntity _server = ServerEntity(
-      domain: serversDomain,
+      domain: serverDomain,
       isOnline: _serverStatus,
       lastUpdate: DateTime.now(),
     );
 
-    //Save the ServerEntity in the global variable
+    //Save the ServerEntity in the cache variable
     di.serversList.add(_server);
 
     return di.serversList;
+  }
+
+  bool _checkServerAlreadyExists(
+      {@required List<ServerEntity> serversList,
+      @required String serverDomain}) {
+    final _findServer =
+        serversList.where((server) => server.domain == serverDomain);
+
+    return _findServer.length > 0;
   }
 }
