@@ -5,7 +5,7 @@ class DioServerStatusChecker implements IServerStatusCheckerDriver {
   @override
   Future<bool> checkServerStatus({String serverDomain}) async {
     try {
-      Response response = await Dio().get(serverDomain);
+      Response response = await Dio().get(serverDomain).timeout(Duration(seconds: 2));
       return response.statusCode == 200;
     } catch (_) {
       print('Not connected');

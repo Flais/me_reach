@@ -33,6 +33,14 @@ abstract class _HomeControllerBase with Store {
     securityProtocol = value;
   }
 
+  @observable
+  bool isAddingNewDomain = false;
+
+  @action
+  setIsAddingNewDomain(bool value) {
+    isAddingNewDomain = value;
+  }
+
   final _addServerUseCase = Modular.get<AddServerUseCase>();
   final _removeServerUseCase = Modular.get<RemoveServerUseCase>();
   final _getServersListUseCase = Modular.get<GetServersListUseCase>();
@@ -77,11 +85,6 @@ abstract class _HomeControllerBase with Store {
         .then((value) => _updateCacheList(value));
   }
 
-  @action
-  _updateCacheList(List<IServerEntity> newList) {
-    listOfServers = newList.asObservable();
-  }
-
   periodicRefreshServers() {
     const _periodicRefreshServersDuration = const Duration(minutes: 1);
     Timer.periodic(
@@ -89,5 +92,10 @@ abstract class _HomeControllerBase with Store {
         (Timer t) => _getServersListUseCase
             .execute()
             .then((value) => _updateCacheList(value)));
+  }
+
+  @action
+  _updateCacheList(List<IServerEntity> newList) {
+    listOfServers = newList.asObservable();
   }
 }

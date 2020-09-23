@@ -129,31 +129,38 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                     Icons.add,
                     color: Colors.green,
                   ),
-                  onTap: () async {
-                    try {
-                      // Check if the serverDomain is valid
-                      if (!_validateServerDomain(
-                          controller.domainTextEditingController.text.trim()))
-                        throw InvalidDomainAddressException();
+                  onTap: controller.isAddingNewDomain
+                      ? () {
+                          print('blocked');
+                        }
+                      : () async {
+                          controller.setIsAddingNewDomain(true);
+                          try {
+                            // Check if the serverDomain is valid
+                            if (!_validateServerDomain(controller
+                                .domainTextEditingController.text
+                                .trim())) throw InvalidDomainAddressException();
 
-                      await controller.addServer(
-                        serverDomain: controller.securityProtocol +
-                            'www.' +
-                            controller.domainTextEditingController.text.trim(),
-                      );
-                    } on InvalidDomainAddressException {
-                      _showSnackBar(
-                        context,
-                        message:
-                            'Este não é um domínio válido. Por favor, utilize um válido.',
-                      );
-                    } on ServerAlreadyExistsException {
-                      _showSnackBar(
-                        context,
-                        message: 'Este domínio já foi adicionado.',
-                      );
-                    }
-                  },
+                            await controller.addServer(
+                              serverDomain: controller.securityProtocol +
+                                  'www.' +
+                                  controller.domainTextEditingController.text
+                                      .trim(),
+                            );
+                          } on InvalidDomainAddressException {
+                            _showSnackBar(
+                              context,
+                              message:
+                                  'Este não é um domínio válido. Por favor, utilize um válido.',
+                            );
+                          } on ServerAlreadyExistsException {
+                            _showSnackBar(
+                              context,
+                              message: 'Este domínio já foi adicionado.',
+                            );
+                          }
+                          controller.setIsAddingNewDomain(false);
+                        },
                 ),
                 SizedBox(width: 5),
               ],
@@ -176,6 +183,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
               },
               showChildOpacityTransition: false,
               child: ImplicitlyAnimatedReorderableList<IServerEntity>(
+                physics: AlwaysScrollableScrollPhysics(),
                 controller: controller.scrollController,
                 items: controller.listOfServers,
                 areItemsTheSame: (oldItem, newItem) =>
@@ -184,39 +192,47 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                   controller.reOrderServersList(newItems);
                 },
                 itemBuilder: (context, itemAnimation, item, index) {
-                  return Reorderable(
-                    key: ValueKey(item),
-                    builder: (context, dragAnimation, inDrag) {
-                      final serverTile = ServerTile(
-                        serverDomain: controller.listOfServers[index].domain,
-                        index: index,
-                        isOnline: controller.listOfServers[index].isOnline,
-                        latUpdate: controller.listOfServers[index].lastUpdate,
-                        refreshServerStatus: () {
-                          controller.refreshServerStatus(
-                            serverDomain:
-                                controller.listOfServers[index].domain,
-                          );
-                        },
-                        removeServer: () {
-                          controller.removeServer(
-                            serverDomain:
-                                controller.listOfServers[index].domain,
-                          );
-                        },
-                      );
-
-                      return dragAnimation.value > 0
-                          ? serverTile
-                          : SizeFadeTransition(
-                              animation: itemAnimation,
-                              axis: Axis.horizontal,
-                              axisAlignment: 1.0,
-                              curve: Curves.ease,
-                              child: serverTile,
+                  return index < controller.listOfServers.length
+                      ? Reorderable(
+                          key: ValueKey(item),
+                          builder: (context, dragAnimation, inDrag) {
+                            final serverTile = ServerTile(
+                              serverDomain:
+                                  controller.listOfServers[index].domain,
+                              index: index,
+                              isOnline:
+                                  controller.listOfServers[index].isOnline,
+                              latUpdate:
+                                  controller.listOfServers[index].lastUpdate,
+                              refreshServerStatus: () {
+                                controller.refreshServerStatus(
+                                  serverDomain:
+                                      controller.listOfServers[index].domain,
+                                );
+                              },
+                              removeServer: () {
+                                controller.removeServer(
+                                  serverDomain:
+                                      controller.listOfServers[index].domain,
+                                );
+                              },
                             );
-                    },
-                  );
+
+                            return dragAnimation.value > 0
+                                ? serverTile
+                                : SizeFadeTransition(
+                                    animation: itemAnimation,
+                                    axis: Axis.horizontal,
+                                    axisAlignment: 1.0,
+                                    curve: Curves.ease,
+                                    child: serverTile,
+                                  );
+                          },
+                        )
+                      : Reorderable(
+                          key: ValueKey(item),
+                          child: Container(),
+                        );
                 },
               ),
             );
@@ -242,6 +258,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
           ),
         ],
       ),
+      duration: Duration(milliseconds: 500),
     );
 
     Scaffold.of(context).showSnackBar(_snackBar);
