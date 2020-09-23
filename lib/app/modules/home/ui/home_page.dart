@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:me_reach/app/core/exceptions.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/ui/widgets/server_tile_widget.dart';
@@ -158,50 +160,65 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   Widget reorderableList() {
     return Observer(
       builder: (_) {
-        return ImplicitlyAnimatedReorderableList<IServerEntity>(
-          controller: controller.scrollController,
-          items: controller.listOfServers,
-          areItemsTheSame: (oldItem, newItem) =>
-              oldItem.domain == newItem.domain,
-          onReorderFinished: (_, __, ___, newItems) {
-            controller.reOrderServersList(newItems);
-          },
-          itemBuilder: (context, itemAnimation, item, index) {
-            return Reorderable(
-              key: ValueKey(item),
-              builder: (context, dragAnimation, inDrag) {
-                final serverTile = ServerTile(
-                  serverDomain: controller.listOfServers[index].domain,
-                  index: index,
-                  isOnline: controller.listOfServers[index].isOnline,
-                  latUpdate: controller.listOfServers[index].lastUpdate,
-                  refreshServerStatus: () {
-                    controller.refreshServerStatus(
-                      serverDomain: controller.listOfServers[index].domain,
-                    );
-                  },
-                  removeServer: () {
-                    controller.removeServer(
-                      serverDomain: controller.listOfServers[index].domain,
-                    );
-                  },
-                );
-
-                return dragAnimation.value > 0
-                    ? serverTile
-                    : SizeFadeTransition(
-                        animation: itemAnimation,
-                        axis: Axis.horizontal,
-                        axisAlignment: 1.0,
-                        curve: Curves.ease,
-                        child: serverTile,
+        return LiquidPullToRefresh(
+          key: controller.refreshIndicatorKey,
+          onRefresh: _handleRefresh,
+          showChildOpacityTransition: false,
+          child: ImplicitlyAnimatedReorderableList<IServerEntity>(
+            controller: controller.scrollController,
+            items: controller.listOfServers,
+            areItemsTheSame: (oldItem, newItem) =>
+                oldItem.domain == newItem.domain,
+            onReorderFinished: (_, __, ___, newItems) {
+              controller.reOrderServersList(newItems);
+            },
+            itemBuilder: (context, itemAnimation, item, index) {
+              return Reorderable(
+                key: ValueKey(item),
+                builder: (context, dragAnimation, inDrag) {
+                  final serverTile = ServerTile(
+                    serverDomain: controller.listOfServers[index].domain,
+                    index: index,
+                    isOnline: controller.listOfServers[index].isOnline,
+                    latUpdate: controller.listOfServers[index].lastUpdate,
+                    refreshServerStatus: () {
+                      controller.refreshServerStatus(
+                        serverDomain: controller.listOfServers[index].domain,
                       );
-              },
-            );
-          },
+                    },
+                    removeServer: () {
+                      controller.removeServer(
+                        serverDomain: controller.listOfServers[index].domain,
+                      );
+                    },
+                  );
+
+                  return dragAnimation.value > 0
+                      ? serverTile
+                      : SizeFadeTransition(
+                          animation: itemAnimation,
+                          axis: Axis.horizontal,
+                          axisAlignment: 1.0,
+                          curve: Curves.ease,
+                          child: serverTile,
+                        );
+                },
+              );
+            },
+          ),
         );
       },
     );
+  }
+
+  Future<void> _handleRefresh() {
+    final Completer<void> completer = Completer<void>();
+    Timer(const Duration(seconds: 1), () {
+      completer.complete();
+    });
+    return completer.future.then<void>((_) {
+      print('ok');
+    });
   }
 
   void _showSnackBar(BuildContext context, {@required String message}) {

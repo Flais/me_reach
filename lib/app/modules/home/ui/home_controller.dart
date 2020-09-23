@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
@@ -17,7 +18,7 @@ abstract class _HomeControllerBase with Store {
   final domainTextEditingController = TextEditingController();
   final animatedListKey = GlobalKey<AnimatedListState>();
   final scrollController = ScrollController();
-
+  final refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
   @observable
   ObservableList<IServerEntity> listOfServers =
       <IServerEntity>[].asObservable();
