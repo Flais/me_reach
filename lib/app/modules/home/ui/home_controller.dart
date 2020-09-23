@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
@@ -27,7 +29,7 @@ abstract class _HomeControllerBase with Store {
   String securityProtocol = 'https://';
 
   @action
-  setSecurityProtocol(String value){
+  setSecurityProtocol(String value) {
     securityProtocol = value;
   }
 
@@ -78,5 +80,14 @@ abstract class _HomeControllerBase with Store {
   @action
   _updateCacheList(List<IServerEntity> newList) {
     listOfServers = newList.asObservable();
+  }
+
+  periodicRefreshServers() {
+    const _periodicRefreshServersDuration = const Duration(minutes: 1);
+    Timer.periodic(
+        _periodicRefreshServersDuration,
+        (Timer t) => _getServersListUseCase
+            .execute()
+            .then((value) => _updateCacheList(value)));
   }
 }

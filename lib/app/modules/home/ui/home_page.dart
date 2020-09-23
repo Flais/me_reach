@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:me_reach/app/core/exceptions.dart';
@@ -21,6 +20,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends ModularState<HomePage, HomeController> {
   //use 'controller' variable to access controller
+
+  @override
+  void initState() {
+    //This method triggers the periodic server status refresh
+    controller.periodicRefreshServers();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +137,8 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                         throw InvalidDomainAddressException();
 
                       await controller.addServer(
-                        serverDomain: controller.securityProtocol + 'www.' +
+                        serverDomain: controller.securityProtocol +
+                            'www.' +
                             controller.domainTextEditingController.text.trim(),
                       );
                     } on InvalidDomainAddressException {
@@ -158,73 +165,82 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   }
 
   Widget reorderableList() {
-    return Observer(
-      builder: (_) {
-        return LiquidPullToRefresh(
-          key: controller.refreshIndicatorKey,
-          onRefresh: _handleRefresh,
-          showChildOpacityTransition: false,
-          child: ImplicitlyAnimatedReorderableList<IServerEntity>(
-            controller: controller.scrollController,
-            items: controller.listOfServers,
-            areItemsTheSame: (oldItem, newItem) =>
-                oldItem.domain == newItem.domain,
-            onReorderFinished: (_, __, ___, newItems) {
-              controller.reOrderServersList(newItems);
-            },
-            itemBuilder: (context, itemAnimation, item, index) {
-              return Reorderable(
-                key: ValueKey(item),
-                builder: (context, dragAnimation, inDrag) {
-                  final serverTile = ServerTile(
-                    serverDomain: controller.listOfServers[index].domain,
-                    index: index,
-                    isOnline: controller.listOfServers[index].isOnline,
-                    latUpdate: controller.listOfServers[index].lastUpdate,
-                    refreshServerStatus: () {
-                      controller.refreshServerStatus(
+    return Builder(
+      builder: (BuildContext context) {
+        return Observer(
+          builder: (_) {
+            return LiquidPullToRefresh(
+              key: controller.refreshIndicatorKey,
+              onRefresh: () {
+                return _handleRefresh(context);
+              },
+              showChildOpacityTransition: false,
+              child: ImplicitlyAnimatedReorderableList<IServerEntity>(
+                controller: controller.scrollController,
+                items: controller.listOfServers,
+                areItemsTheSame: (oldItem, newItem) =>
+                    oldItem.domain == newItem.domain,
+                onReorderFinished: (_, __, ___, newItems) {
+                  controller.reOrderServersList(newItems);
+                },
+                itemBuilder: (context, itemAnimation, item, index) {
+                  return Reorderable(
+                    key: ValueKey(item),
+                    builder: (context, dragAnimation, inDrag) {
+                      final serverTile = ServerTile(
                         serverDomain: controller.listOfServers[index].domain,
+                        index: index,
+                        isOnline: controller.listOfServers[index].isOnline,
+                        latUpdate: controller.listOfServers[index].lastUpdate,
+                        refreshServerStatus: () {
+                          controller.refreshServerStatus(
+                            serverDomain:
+                                controller.listOfServers[index].domain,
+                          );
+                        },
+                        removeServer: () {
+                          controller.removeServer(
+                            serverDomain:
+                                controller.listOfServers[index].domain,
+                          );
+                        },
                       );
-                    },
-                    removeServer: () {
-                      controller.removeServer(
-                        serverDomain: controller.listOfServers[index].domain,
-                      );
+
+                      return dragAnimation.value > 0
+                          ? serverTile
+                          : SizeFadeTransition(
+                              animation: itemAnimation,
+                              axis: Axis.horizontal,
+                              axisAlignment: 1.0,
+                              curve: Curves.ease,
+                              child: serverTile,
+                            );
                     },
                   );
-
-                  return dragAnimation.value > 0
-                      ? serverTile
-                      : SizeFadeTransition(
-                          animation: itemAnimation,
-                          axis: Axis.horizontal,
-                          axisAlignment: 1.0,
-                          curve: Curves.ease,
-                          child: serverTile,
-                        );
                 },
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Future<void> _handleRefresh() {
-    final Completer<void> completer = Completer<void>();
-    Timer(const Duration(seconds: 1), () {
-      completer.complete();
-    });
-    return completer.future.then<void>((_) {
-      print('ok');
-    });
+  Future<void> _handleRefresh(BuildContext context) {
+    return controller
+        .getServersList()
+        .then((value) => _showSnackBar(context, message: 'Atualizado!'));
   }
 
   void _showSnackBar(BuildContext context, {@required String message}) {
     final _snackBar = SnackBar(
-      content: Text(
-        message,
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            message,
+          ),
+        ],
       ),
     );
 
