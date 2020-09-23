@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
+import 'package:me_reach/app/core/exceptions.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/ui/widgets/server_tile_widget.dart';
 import 'home_controller.dart';
@@ -71,25 +73,46 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   }
 
   Widget addServerDomainTextField() {
-    return CupertinoTextField(
-      controller: controller.domainTextEditingController,
-      placeholder: 'Adicione um domínio...',
-      suffix: Row(
-        children: [
-          GestureDetector(
-            child: Icon(
-              Icons.add,
-              color: Colors.green,
-            ),
-            onTap: () {
-              controller.addServer(
-                serverDomain: controller.domainTextEditingController.text,
-              );
-            },
+    return Builder(
+      builder: (BuildContext context) {
+        return CupertinoTextField(
+          controller: controller.domainTextEditingController,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(30),
+          ],
+          keyboardType: TextInputType.emailAddress,
+          placeholder: 'Adicione um domínio...',
+          suffix: Row(
+            children: [
+              GestureDetector(
+                child: Icon(
+                  Icons.add,
+                  color: Colors.green,
+                ),
+                onTap: () async{
+                  try {
+                    await controller.addServer(
+                      serverDomain: controller.domainTextEditingController.text,
+                    );
+                  } on InvalidNetworkAddressException {
+                    _showSnackBar(
+                      context,
+                      message:
+                          'Este não é um endereço/domínio válido. Por favor, utilize um válido.',
+                    );
+                  } on ServerAlreadyExistsException {
+                    _showSnackBar(
+                      context,
+                      message: 'Este endereço/domínio já foi adicionado.',
+                    );
+                  }
+                },
+              ),
+              SizedBox(width: 5),
+            ],
           ),
-          SizedBox(width: 5),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -134,5 +157,15 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
         );
       },
     );
+  }
+
+  void _showSnackBar(BuildContext context, {@required String message}) {
+    final _snackBar = SnackBar(
+      content: Text(
+        message,
+      ),
+    );
+
+    Scaffold.of(context).showSnackBar(_snackBar);
   }
 }

@@ -29,18 +29,17 @@ abstract class _HomeControllerBase with Store {
   Future getServersList() async {
     await getServersListUseCase
         .execute()
-        .then((value) => listOfServers = value.asObservable());
+        .then((value) => _updateCacheList(value));
   }
 
-  @action
   addServer({@required String serverDomain}) async {
     await addServerUseCase
         .execute(serverDomain: serverDomain)
-        .then((value) => listOfServers = value.asObservable());
+        .then((value) => _updateCacheList(value));
 
     domainTextEditingController.text = '';
 
-    //Jump to start
+    //Jump to the beginning of the list
     scrollController.animateTo(
       0,
       duration: Duration(milliseconds: 700),
@@ -48,16 +47,19 @@ abstract class _HomeControllerBase with Store {
     );
   }
 
-  @action
   removeServer({@required String serverDomain}) async {
     removeServerUseCase
         .execute(serverDomain: serverDomain)
-        .then((value) => listOfServers = value.asObservable());
+        .then((value) => _updateCacheList(value));
+  }
+
+  reOrderServersList(List<IServerEntity> newList) async {
+    _updateCacheList(newList.asObservable());
+    await _reOrderServersListUseCase.execute(serversList: newList);
   }
 
   @action
-  reOrderServersList(List<IServerEntity> newList) async {
+  _updateCacheList(List<IServerEntity> newList) {
     listOfServers = newList.asObservable();
-    await _reOrderServersListUseCase.execute(serversList: newList);
   }
 }
