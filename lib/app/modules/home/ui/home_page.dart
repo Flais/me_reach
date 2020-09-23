@@ -5,6 +5,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/ui/widgets/server_tile_widget.dart';
 import 'home_controller.dart';
@@ -80,9 +81,9 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
               Icons.add,
               color: Colors.green,
             ),
-            onTap: ()  {
-               controller.addServer(
-                 serverDomain: controller.domainTextEditingController.text,
+            onTap: () {
+              controller.addServer(
+                serverDomain: controller.domainTextEditingController.text,
               );
             },
           ),
@@ -100,22 +101,33 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
           items: controller.listOfServers,
           areItemsTheSame: (oldItem, newItem) =>
               oldItem.domain == newItem.domain,
-          onReorderFinished: (item, from, to, newItems) {
+          onReorderFinished: (_, __, ___, newItems) {
             controller.reOrderServersList(newItems);
           },
           itemBuilder: (context, itemAnimation, item, index) {
             return Reorderable(
               key: ValueKey(item),
               builder: (context, dragAnimation, inDrag) {
-                return ServerTile(
+                final serverTile = ServerTile(
                   serverDomain: controller.listOfServers[index].domain,
                   index: index,
                   isOnline: controller.listOfServers[index].isOnline,
                   latUpdate: controller.listOfServers[index].lastUpdate,
                   removeServer: () {
-                    controller.removeServer(serverDomain: controller.listOfServers[index].domain);
+                    controller.removeServer(
+                        serverDomain: controller.listOfServers[index].domain);
                   },
                 );
+
+                return dragAnimation.value > 0
+                    ? serverTile
+                    : SizeFadeTransition(
+                        animation: itemAnimation,
+                        axis: Axis.horizontal,
+                        axisAlignment: 1.0,
+                        curve: Curves.ease,
+                        child: serverTile,
+                      );
               },
             );
           },
