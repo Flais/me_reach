@@ -1,2 +1,2 @@
 class ServerAlreadyExistsException implements Exception{}
-class InvalidNetworkAddressException implements Exception{}
+class InvalidDomainAddressException implements Exception{}

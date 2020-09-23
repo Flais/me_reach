@@ -22,11 +22,6 @@ class AddServerUseCase {
       serverDomain: serverDomain,
     )) throw ServerAlreadyExistsException();
 
-    // Check if the serverDomain is valid
-    if (!_validateServerDomain(serverDomain) &&
-        !_validateNetworkAddress(serverDomain))
-      throw InvalidNetworkAddressException();
-
     //Check the status of the server
     final _serverStatus =
         await _repository.checkServerStatus(serverDomain: serverDomain);
@@ -54,14 +49,5 @@ class AddServerUseCase {
     return _findServer.length > 0;
   }
 
-  bool _validateServerDomain(String serverDomain) {
-    return RegExp(
-            r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$")
-        .hasMatch(serverDomain);
-  }
 
-  bool _validateNetworkAddress(String serverAddress) {
-    return RegExp(r"\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b")
-        .hasMatch(serverAddress);
-  }
 }

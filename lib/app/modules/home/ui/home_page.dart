@@ -75,43 +75,82 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   Widget addServerDomainTextField() {
     return Builder(
       builder: (BuildContext context) {
-        return CupertinoTextField(
-          controller: controller.domainTextEditingController,
-          inputFormatters: [
-            LengthLimitingTextInputFormatter(30),
-          ],
-          keyboardType: TextInputType.emailAddress,
-          placeholder: 'Adicione um domínio...',
-          suffix: Row(
-            children: [
-              GestureDetector(
-                child: Icon(
-                  Icons.add,
-                  color: Colors.green,
-                ),
-                onTap: () async {
-                  try {
-                    await controller.addServer(
-                      serverDomain: controller.domainTextEditingController.text,
-                    );
-                  } on InvalidNetworkAddressException {
-                    _showSnackBar(
-                      context,
-                      message:
-                          'Este não é um endereço/domínio válido. Por favor, utilize um válido.',
-                    );
-                  } on ServerAlreadyExistsException {
-                    _showSnackBar(
-                      context,
-                      message: 'Este endereço/domínio já foi adicionado.',
-                    );
-                  }
-                },
-              ),
-              SizedBox(width: 5),
+        return Observer(builder: (_) {
+          return CupertinoTextField(
+            controller: controller.domainTextEditingController,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(25),
             ],
-          ),
-        );
+            keyboardType: TextInputType.emailAddress,
+            placeholder: 'Adicione um domínio...',
+            prefix: Row(
+              children: [
+                SizedBox(width: 10),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    iconEnabledColor: Colors.transparent,
+                    elevation: 0,
+                    isExpanded: false,
+                    value: controller.securityProtocol,
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 14,
+                      color: Colors.black,
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                        child: Text('Https://'),
+                        value: 'https://',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('Http://'),
+                        value: 'http://',
+                      ),
+                    ],
+                    onChanged: (value) {
+                      controller.setSecurityProtocol(value);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            suffix: Row(
+              children: [
+                GestureDetector(
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.green,
+                  ),
+                  onTap: () async {
+                    try {
+                      // Check if the serverDomain is valid
+                      if (!_validateServerDomain(
+                          controller.domainTextEditingController.text.trim()))
+                        throw InvalidDomainAddressException();
+
+                      await controller.addServer(
+                        serverDomain: controller.securityProtocol + 'www.' +
+                            controller.domainTextEditingController.text.trim(),
+                      );
+                    } on InvalidDomainAddressException {
+                      _showSnackBar(
+                        context,
+                        message:
+                            'Este não é um domínio válido. Por favor, utilize um válido.',
+                      );
+                    } on ServerAlreadyExistsException {
+                      _showSnackBar(
+                        context,
+                        message: 'Este domínio já foi adicionado.',
+                      );
+                    }
+                  },
+                ),
+                SizedBox(width: 5),
+              ],
+            ),
+          );
+        });
       },
     );
   }
@@ -173,5 +212,11 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
     );
 
     Scaffold.of(context).showSnackBar(_snackBar);
+  }
+
+  bool _validateServerDomain(String serverDomain) {
+    return RegExp(
+            r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$")
+        .hasMatch(serverDomain);
   }
 }

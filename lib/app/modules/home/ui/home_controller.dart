@@ -22,6 +22,14 @@ abstract class _HomeControllerBase with Store {
   ObservableList<IServerEntity> listOfServers =
       <IServerEntity>[].asObservable();
 
+  @observable
+  String securityProtocol = 'https://';
+
+  @action
+  setSecurityProtocol(String value){
+    securityProtocol = value;
+  }
+
   final _addServerUseCase = Modular.get<AddServerUseCase>();
   final _removeServerUseCase = Modular.get<RemoveServerUseCase>();
   final _getServersListUseCase = Modular.get<GetServersListUseCase>();
