@@ -43,12 +43,7 @@ class ServersRepository implements IServersRepository {
   }
 
   @override
-  Future<void> removeServerFromDatabase({String serverDomain}) async {
-    await this._dataSource.removeServerFromDatabase(serverDomain: serverDomain);
-  }
-
-  @override
-  Future<void> saveServerOnDatabase({String serverDomain}) async {
-    await this._dataSource.saveServerOnDatabase(serverDomain: serverDomain);
+  Future<void> updateDatabase({List<IServerEntity> serversList}) async{
+    await this._dataSource.updateDatabase(serversList: serversList);
   }
 }

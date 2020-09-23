@@ -3,25 +3,22 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:me_reach/app/app_controller.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
-import 'package:me_reach/app/modules/home/infra/entities/server_entity.dart';
 
-class RemoveServerUseCase {
-
+class ReorderServersListUseCase {
   final IServersRepository _repository;
 
-  RemoveServerUseCase({@required IServersRepository repository})
+  ReorderServersListUseCase({@required IServersRepository repository})
       : this._repository = repository;
 
-  Future<List<IServerEntity>> execute({@required String serverDomain}) async {
+  Future<void> execute({@required List<IServerEntity> serversList}) async {
     // This is how the Dependence Injector is invoked
     final di = Modular.get<AppController>();
 
-    //Remove the ServerEntity from the cache variable
-    di.serversList.removeWhere((server) => server.domain == serverDomain);
+    await _repository.updateDatabase(serversList: serversList);
 
-    //Update database with the cache variable value
-    await _repository.updateDatabase(serversList: di.serversList);
-
-    return di.serversList;
+    //Save the ServerEntity in the cache variable
+    //Update de cache variable with persistence data
+    di.serversList.clear();
+    di.serversList.addAll(serversList);
   }
 }

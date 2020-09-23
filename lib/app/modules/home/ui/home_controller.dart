@@ -3,6 +3,7 @@ import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_enti
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
+import 'package:me_reach/app/modules/home/domain/usecases/reorder_servers_list.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -23,6 +24,7 @@ abstract class _HomeControllerBase with Store {
   final addServerUseCase = Modular.get<AddServerUseCase>();
   final removeServerUseCase = Modular.get<RemoveServerUseCase>();
   final getServersListUseCase = Modular.get<GetServersListUseCase>();
+  final _reOrderServersListUseCase = Modular.get<ReorderServersListUseCase>();
 
   Future getServersList() async {
     await getServersListUseCase
@@ -31,14 +33,9 @@ abstract class _HomeControllerBase with Store {
   }
 
   @action
-  reorderList(List<IServerEntity> value){
-    listOfServers = value.asObservable();
-  }
-
-  @action
-  addServer({@required String domainServer}) async {
+  addServer({@required String serverDomain}) async {
     await addServerUseCase
-        .execute(serverDomain: domainServer)
+        .execute(serverDomain: serverDomain)
         .then((value) => listOfServers = value.asObservable());
 
     domainTextEditingController.text = '';
@@ -52,12 +49,15 @@ abstract class _HomeControllerBase with Store {
   }
 
   @action
-  removeServer({@required String domainServer}) async {
-   await removeServerUseCase
-        .execute(serverDomain: domainServer)
+  removeServer({@required String serverDomain}) async {
+    removeServerUseCase
+        .execute(serverDomain: serverDomain)
         .then((value) => listOfServers = value.asObservable());
+  }
 
-
-
+  @action
+  reOrderServersList(List<IServerEntity> newList) async {
+    listOfServers = newList.asObservable();
+    await _reOrderServersListUseCase.execute(serversList: newList);
   }
 }

@@ -11,18 +11,9 @@ class ServerEntity implements IServerEntity {
   @override
   DateTime lastUpdate;
 
-  ServerEntity(
-      {@required this.domain,
-      @required this.isOnline,
-      @required this.lastUpdate});
-
-  @override
-  IServerEntity fromJson(Map<String, dynamic> json) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Map<String, dynamic> toJson(IServerEntity serverEntity) {
-    throw UnimplementedError();
-  }
+  ServerEntity({
+    @required this.domain,
+    @required this.isOnline,
+    @required this.lastUpdate,
+  });
 }

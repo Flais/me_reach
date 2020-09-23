@@ -1,4 +1,3 @@
-import 'package:me_reach/app/modules/home/infra/entities/server_entity.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 

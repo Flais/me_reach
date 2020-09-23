@@ -32,10 +32,11 @@ class AddServerUseCase {
       lastUpdate: DateTime.now(),
     );
 
-    await _repository.saveServerOnDatabase(serverDomain: serverDomain);
 
     //Save the ServerEntity in the cache variable
     di.serversList.insert(0, _server);
+
+    await _repository.updateDatabase(serversList: di.serversList);
 
     return di.serversList;
   }

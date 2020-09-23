@@ -24,7 +24,8 @@ class GetServersListUseCase {
 
 
     //Update de cache variable with persistence data
-    di.serversList = _serversList;
+    di.serversList.clear();
+    di.serversList.addAll(_serversList);
 
     return _serversList;
   }

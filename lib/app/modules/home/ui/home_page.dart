@@ -82,7 +82,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
             ),
             onTap: ()  {
                controller.addServer(
-                domainServer: controller.domainTextEditingController.text,
+                 serverDomain: controller.domainTextEditingController.text,
               );
             },
           ),
@@ -101,7 +101,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
           areItemsTheSame: (oldItem, newItem) =>
               oldItem.domain == newItem.domain,
           onReorderFinished: (item, from, to, newItems) {
-            controller.reorderList(newItems);
+            controller.reOrderServersList(newItems);
           },
           itemBuilder: (context, itemAnimation, item, index) {
             return Reorderable(
@@ -112,7 +112,9 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                   index: index,
                   isOnline: controller.listOfServers[index].isOnline,
                   latUpdate: controller.listOfServers[index].lastUpdate,
-                  removeServer: () {},
+                  removeServer: () {
+                    controller.removeServer(serverDomain: controller.listOfServers[index].domain);
+                  },
                 );
               },
             );

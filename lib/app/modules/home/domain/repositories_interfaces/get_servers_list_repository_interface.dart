@@ -2,7 +2,7 @@ import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_enti
 
 abstract class IServersRepository{
   Future<List<IServerEntity>> getServersFromDatabase();
-  Future<void> saveServerOnDatabase({String serverDomain});
-  Future<void> removeServerFromDatabase({String serverDomain});
   Future<bool> checkServerStatus({String serverDomain});
+  Future<void> updateDatabase({List<IServerEntity> serversList});
+
 }

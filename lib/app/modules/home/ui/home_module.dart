@@ -2,6 +2,7 @@ import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_ser
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
+import 'package:me_reach/app/modules/home/domain/usecases/reorder_servers_list.dart';
 import 'package:me_reach/app/modules/home/external/drivers/server_status_checker.dart';
 import 'package:me_reach/app/modules/home/external/services/hive_get_servers_list_local_datasource.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/drivers_interfaces/server_status_checker_interface.dart';
@@ -33,6 +34,7 @@ class HomeModule extends ChildModule {
         Bind((i) => AddServerUseCase(repository: i.get<IServersRepository>())),
         Bind((i) => GetServersListUseCase(repository: i.get<IServersRepository>())),
         Bind((i) => RemoveServerUseCase(repository: i.get<IServersRepository>())),
+        Bind((i) => ReorderServersListUseCase(repository: i.get<IServersRepository>())),
       ];
 
   @override
