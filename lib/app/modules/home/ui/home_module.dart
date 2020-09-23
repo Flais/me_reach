@@ -4,7 +4,7 @@ import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart'
 import 'package:me_reach/app/modules/home/domain/usecases/refresh_server_status.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/reorder_servers_list.dart';
-import 'package:me_reach/app/modules/home/external/drivers/server_status_checker.dart';
+import 'package:me_reach/app/modules/home/external/drivers/dio_server_status_checker.dart';
 import 'package:me_reach/app/modules/home/external/services/hive_get_servers_list_local_datasource.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/drivers_interfaces/server_status_checker_interface.dart';
 import 'package:me_reach/app/modules/home/infra/external_interfaces/services_interfaces/servers_datasource_interface.dart';
@@ -23,7 +23,7 @@ class HomeModule extends ChildModule {
         Bind((i) => HiveServersLocalDataSource()),
 
         //Drivers
-        Bind((i) => ServerStatusChecker()),
+        Bind((i) => DioServerStatusChecker()),
 
         //Repositories
         Bind((i) => ServersRepository(
