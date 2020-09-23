@@ -33,6 +33,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  dart_ping: ^1.0.0
   flutter_slidable: ^0.5.7
   implicitly_animated_reorderable_list: ^0.2.3
   intl: ^0.16.1

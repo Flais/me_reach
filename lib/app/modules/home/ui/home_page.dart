@@ -89,7 +89,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                   Icons.add,
                   color: Colors.green,
                 ),
-                onTap: () async{
+                onTap: () async {
                   try {
                     await controller.addServer(
                       serverDomain: controller.domainTextEditingController.text,
@@ -136,9 +136,15 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                   index: index,
                   isOnline: controller.listOfServers[index].isOnline,
                   latUpdate: controller.listOfServers[index].lastUpdate,
+                  refreshServerStatus: () {
+                    controller.refreshServerStatus(
+                      serverDomain: controller.listOfServers[index].domain,
+                    );
+                  },
                   removeServer: () {
                     controller.removeServer(
-                        serverDomain: controller.listOfServers[index].domain);
+                      serverDomain: controller.listOfServers[index].domain,
+                    );
                   },
                 );
 

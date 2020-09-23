@@ -9,6 +9,7 @@ class ServerTile extends StatelessWidget {
   final DateTime _lastUpdate;
   final bool _isOnline;
   final Function _removeServer;
+  final Function _refreshServerStatus;
 
   ServerTile({
     @required String serverDomain,
@@ -16,11 +17,15 @@ class ServerTile extends StatelessWidget {
     @required DateTime latUpdate,
     @required bool isOnline,
     @required Function removeServer,
+    @required Function refreshServerStatus,
   })  : this._serveDomain = serverDomain,
         this._index = index,
         this._lastUpdate = latUpdate,
         this._removeServer = removeServer,
+        this._refreshServerStatus = refreshServerStatus,
         this._isOnline = isOnline;
+
+  final SlidableController slidableController = SlidableController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,48 +33,62 @@ class ServerTile extends StatelessWidget {
       children: [
         Divider(height: .3),
         Slidable(
-          actionPane: const SlidableBehindActionPane(),
+          actionPane: const SlidableScrollActionPane(),
           secondaryActions: [
-            GestureDetector(
-              onTap: this._removeServer,
-              child: Container(
-                height: 68,
-                color: Colors.green,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.refresh,
-                      color: Colors.white,
+            Builder(
+              builder: (BuildContext context) {
+                return GestureDetector(
+                  onTap: () {
+                    this._refreshServerStatus();
+                    Slidable.of(context).close();
+
+                    _showSnackBar(context, message: 'Atualizado!');
+                  },
+                  child: Container(
+                    height: 68,
+                    color: Colors.green,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.refresh,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Atualizar',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
                     ),
-                    Text(
-                      'Atualizar',
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
-            GestureDetector(
-              onTap: this._removeServer,
-              child: Container(
-                height: 68,
-                color: Colors.red,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                    Text(
-                      'Excluir',
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
+            Builder(builder: (BuildContext context) {
+              return GestureDetector(
+                onTap: (){
+                  this._removeServer();
+                  _showSnackBar(context, message: 'Removido!');
+                },
+                child: Container(
+                  height: 68,
+                  color: Colors.red,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                      Text(
+                        'Excluir',
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },),
           ],
           child: Container(
             height: 70,
@@ -129,5 +148,18 @@ class ServerTile extends StatelessWidget {
     final String formatted = hourFormatter.format(dateTime);
 
     return formatted;
+  }
+
+  void _showSnackBar(BuildContext context, {@required String message}) {
+    final _snackBar = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(message),
+        ],
+      ),
+      duration: Duration(milliseconds: 500),
+    );
+    Scaffold.of(context).showSnackBar(_snackBar);
   }
 }

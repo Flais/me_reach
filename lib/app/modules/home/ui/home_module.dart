@@ -1,6 +1,7 @@
 import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
+import 'package:me_reach/app/modules/home/domain/usecases/refresh_server_status.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/remove_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/reorder_servers_list.dart';
 import 'package:me_reach/app/modules/home/external/drivers/server_status_checker.dart';
@@ -35,6 +36,7 @@ class HomeModule extends ChildModule {
         Bind((i) => GetServersListUseCase(repository: i.get<IServersRepository>())),
         Bind((i) => RemoveServerUseCase(repository: i.get<IServersRepository>())),
         Bind((i) => ReorderServersListUseCase(repository: i.get<IServersRepository>())),
+        Bind((i) => RefreshServerStatus(repository: i.get<IServersRepository>())),
       ];
 
   @override

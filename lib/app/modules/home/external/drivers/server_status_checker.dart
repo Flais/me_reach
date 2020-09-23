@@ -5,7 +5,7 @@ class ServerStatusChecker implements IServerStatusCheckerDriver {
   @override
   Future<bool> checkServerStatus({String serverDomain}) async {
     try {
-      final result = await InternetAddress.lookup(serverDomain).timeout(Duration(seconds: 1));
+      final result = await InternetAddress.lookup(serverDomain).timeout(Duration(milliseconds: 5));
 
       final _isConnected = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
 
