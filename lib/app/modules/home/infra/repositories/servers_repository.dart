@@ -20,15 +20,17 @@ class ServersRepository implements IServersRepository {
     final _response = await this._dataSource.getServersFromDatabase();
 
     //Converts the data received from dataSource to a List<IServerEntity>
-    final List<IServerEntity> _entityReturn = _response
+    final List<IServerEntity> _entityReturn = await Future.wait(_response
         .map(
-          (serverData) => ServerEntity(
-            domain: serverData,
+          (serverDomain) async => ServerEntity(
+            domain: serverDomain,
             lastUpdate: DateTime.now(),
-            isOnline: true,
+            isOnline: await _serverStatusCheckerDriver.checkServerStatus(
+              serverDomain: serverDomain,
+            ),
           ),
         )
-        .toList();
+        .toList());
 
     return _entityReturn;
   }
@@ -46,7 +48,7 @@ class ServersRepository implements IServersRepository {
   }
 
   @override
-  Future<void> saveServerOnDatabase({String serverDomain}) async{
+  Future<void> saveServerOnDatabase({String serverDomain}) async {
     await this._dataSource.saveServerOnDatabase(serverDomain: serverDomain);
   }
 }

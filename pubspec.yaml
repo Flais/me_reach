@@ -33,6 +33,9 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  flutter_slidable: ^0.5.7
+  implicitly_animated_reorderable_list: ^0.2.3
+  intl: ^0.16.1
   path_provider: ^1.6.17
   hive: ^1.4.4
   dio: ^3.0.10

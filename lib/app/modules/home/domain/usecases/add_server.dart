@@ -32,16 +32,16 @@ class AddServerUseCase {
       lastUpdate: DateTime.now(),
     );
 
-    _repository.saveServerOnDatabase(serverDomain: serverDomain);
+    await _repository.saveServerOnDatabase(serverDomain: serverDomain);
 
     //Save the ServerEntity in the cache variable
-    di.serversList.add(_server);
+    di.serversList.insert(0, _server);
 
     return di.serversList;
   }
 
   bool _checkServerAlreadyExists(
-      {@required List<ServerEntity> serversList,
+      {@required List<IServerEntity> serversList,
       @required String serverDomain}) {
     final _findServer =
         serversList.where((server) => server.domain == serverDomain);

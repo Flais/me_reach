@@ -10,6 +10,8 @@ class HiveServersLocalDataSource implements IServersDataSource {
     final _appDocumentDirectory = await getApplicationDocumentsDirectory();
     Hive.init(_appDocumentDirectory.path);
 
+
+
     _serversBox = await Hive.openBox('servers');
   }
 
