@@ -99,7 +99,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                     iconEnabledColor: Colors.transparent,
                     elevation: 0,
                     isExpanded: false,
-                    value: controller.securityProtocol,
+                    value: controller.textFieldSecurityProtocolOption,
                     icon: Icon(
                       Icons.keyboard_arrow_down,
                       size: 14,
@@ -116,7 +116,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                       ),
                     ],
                     onChanged: (value) {
-                      controller.setSecurityProtocol(value);
+                      controller.setTextFieldSecurityProtocolOption(value);
                     },
                   ),
                 ),
@@ -142,7 +142,8 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                                 .trim())) throw InvalidDomainAddressException();
 
                             await controller.addServer(
-                              serverDomain: controller.securityProtocol +
+                              serverDomain: controller
+                                      .textFieldSecurityProtocolOption +
                                   'www.' +
                                   controller.domainTextEditingController.text
                                       .trim(),

@@ -17,20 +17,32 @@ part 'home_controller.g.dart';
 class HomeController = _HomeControllerBase with _$HomeController;
 
 abstract class _HomeControllerBase with Store {
+
+  //UseCases
+  final _addServerUseCase = Modular.get<AddServerUseCase>();
+  final _removeServerUseCase = Modular.get<RemoveServerUseCase>();
+  final _getServersListUseCase = Modular.get<GetServersListUseCase>();
+  final _reOrderServersListUseCase = Modular.get<ReorderServersListUseCase>();
+  final _refreshServerStatusUseCase = Modular.get<RefreshServerStatus>();
+
+  //Widgets Stuff
   final domainTextEditingController = TextEditingController();
   final animatedListKey = GlobalKey<AnimatedListState>();
   final scrollController = ScrollController();
   final refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
-  @observable
-  ObservableList<IServerEntity> listOfServers =
-      <IServerEntity>[].asObservable();
 
+  //Cache list variable
   @observable
-  String securityProtocol = 'https://';
+  ObservableList<IServerEntity> listOfServers = <IServerEntity>[].asObservable();
+
+
+  //Widgets State Management
+  @observable
+  String textFieldSecurityProtocolOption = 'https://';
 
   @action
-  setSecurityProtocol(String value) {
-    securityProtocol = value;
+  setTextFieldSecurityProtocolOption(String value) {
+    textFieldSecurityProtocolOption = value;
   }
 
   @observable
@@ -41,20 +53,15 @@ abstract class _HomeControllerBase with Store {
     isAddingNewDomain = value;
   }
 
-  final _addServerUseCase = Modular.get<AddServerUseCase>();
-  final _removeServerUseCase = Modular.get<RemoveServerUseCase>();
-  final _getServersListUseCase = Modular.get<GetServersListUseCase>();
-  final _reOrderServersListUseCase = Modular.get<ReorderServersListUseCase>();
-  final _refreshServerStatusUseCase = Modular.get<RefreshServerStatus>();
-
-  Future getServersList() async {
-    await _getServersListUseCase
+  //General Methods
+  getServersList() async {
+    _getServersListUseCase
         .execute()
         .then((value) => _updateCacheList(value));
   }
 
   addServer({@required String serverDomain}) async {
-    await _addServerUseCase
+    _addServerUseCase
         .execute(serverDomain: serverDomain)
         .then((value) => _updateCacheList(value));
 
