@@ -35,7 +35,6 @@ abstract class _HomeControllerBase with Store {
   @observable
   ObservableList<IServerEntity> listOfServers = <IServerEntity>[].asObservable();
 
-
   //Widgets State Management
   @observable
   String textFieldSecurityProtocolOption = 'https://';

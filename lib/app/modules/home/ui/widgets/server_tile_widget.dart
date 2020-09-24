@@ -35,119 +35,64 @@ class ServerTile extends StatelessWidget {
         Slidable(
           actionPane: const SlidableScrollActionPane(),
           secondaryActions: [
-            Builder(
-              builder: (BuildContext context) {
-                return GestureDetector(
-                  onTap: () {
-                    this._refreshServerStatus();
-                    Slidable.of(context).close();
-
-                    _showSnackBar(context, message: 'Atualizado!');
-                  },
-                  child: Container(
-                    height: 68,
-                    color: Colors.green,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          'Atualizar',
-                          style: TextStyle(color: Colors.white),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              },
+            _slidableAction(
+              title: 'Atualizar',
+              iconData: Icons.refresh,
+              backGroundColor: Colors.green,
+              snackBarOnTapMessage: 'Atualizado!',
+              onTapAction: this._refreshServerStatus,
             ),
-            Builder(builder: (BuildContext context) {
-              return GestureDetector(
-                onTap: (){
-                  this._removeServer();
-                  _showSnackBar(context, message: 'Removido!');
-                },
-                child: Container(
-                  height: 68,
-                  color: Colors.red,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        'Excluir',
-                        style: TextStyle(color: Colors.white),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },),
+            _slidableAction(
+              title: 'Excluir',
+              iconData: Icons.delete,
+              backGroundColor: Colors.red,
+              snackBarOnTapMessage: 'Removido!',
+              onTapAction: this._removeServer,
+            ),
           ],
-          child: Container(
-            height: 70,
-            color: Colors.white,
-            alignment: Alignment.center,
-            child: ListTile(
-              dense: true,
-              title: Text(
-                this._serveDomain,
-              ),
-              leading: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    this._index.toString(),
-                  ),
-                ],
-              ),
-              subtitle: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        height: 8,
-                        width: 8,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(999),
-                          color: this._isOnline ? Colors.green : Colors.red,
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        this._isOnline ? 'Online' : 'Offline',
-                      ),
-                    ],
-                  ),
-                  Text('Ult. Update: ${_getFormattedDate(this._lastUpdate)}h')
-                ],
-              ),
-              trailing: Handle(
-                delay: Duration(milliseconds: 100),
-                child: Icon(
-                  Icons.drag_handle,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-          ),
+          child: _lisTileBody(),
         ),
       ],
     );
   }
 
-  String _getFormattedDate(DateTime dateTime) {
-    final DateFormat hourFormatter = DateFormat('HH:mm');
-    final String formatted = hourFormatter.format(dateTime);
-
-    return formatted;
+  Widget _slidableAction({
+    @required String snackBarOnTapMessage,
+    @required String title,
+    @required IconData iconData,
+    @required Color backGroundColor,
+    @required Function onTapAction,
+  }) {
+    return Builder(
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            onTapAction();
+            Slidable.of(context).close();
+            _showSnackBar(context, message: snackBarOnTapMessage);
+          },
+          child: Container(
+            height: 68,
+            color: backGroundColor,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  iconData,
+                  color: Colors.white,
+                ),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showSnackBar(BuildContext context, {@required String message}) {
@@ -161,5 +106,63 @@ class ServerTile extends StatelessWidget {
       duration: Duration(milliseconds: 500),
     );
     Scaffold.of(context).showSnackBar(_snackBar);
+  }
+
+  Widget _lisTileBody() {
+    return Container(
+      height: 70,
+      color: Colors.white,
+      alignment: Alignment.center,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          this._serveDomain,
+        ),
+        leading: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              this._index.toString(),
+            ),
+          ],
+        ),
+        subtitle: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  height: 8,
+                  width: 8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(999),
+                    color: this._isOnline ? Colors.green : Colors.red,
+                  ),
+                ),
+                SizedBox(width: 5),
+                Text(
+                  this._isOnline ? 'Online' : 'Offline',
+                ),
+              ],
+            ),
+            Text('Ult. Update: ${_getFormattedDate(this._lastUpdate)}h')
+          ],
+        ),
+        trailing: Handle(
+          delay: Duration(milliseconds: 100),
+          child: Icon(
+            Icons.drag_handle,
+            color: Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getFormattedDate(DateTime dateTime) {
+    final DateFormat hourFormatter = DateFormat('HH:mm');
+    final String formatted = hourFormatter.format(dateTime);
+
+    return formatted;
   }
 }
