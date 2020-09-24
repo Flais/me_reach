@@ -124,16 +124,15 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
       builder: (BuildContext context) {
         return Observer(
           builder: (_) {
-            final _refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
             return LiquidPullToRefresh(
-              key: _refreshIndicatorKey,
+              key: GlobalKey<LiquidPullToRefreshState>(),
               onRefresh: () {
                 return _handleRefresh(context);
               },
               showChildOpacityTransition: false,
               child: ImplicitlyAnimatedReorderableList<IServerEntity>(
                 physics: AlwaysScrollableScrollPhysics(),
-                controller: controller.scrollController,
+                controller: ScrollController(),
                 items: controller.listOfServers,
                 areItemsTheSame: (oldItem, newItem) =>
                     oldItem.domain == newItem.domain,

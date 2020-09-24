@@ -26,7 +26,6 @@ abstract class _HomeControllerBase with Store {
 
   //Widgets Stuff
   final domainTextEditingController = TextEditingController();
-  final animatedListKey = GlobalKey<AnimatedListState>();
   final scrollController = ScrollController();
 
   //Cache list variable
