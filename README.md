@@ -16,7 +16,7 @@ O MeReach é um aplicativo feito com Flutter. Ele permite o usuário monitorar u
 
 OBS: 
 
-Outra opção seria utilizar Stream, assim as informações seriam atualizadas em tempo real, sem a necessidade de atualizar manualmente ou trigger de funções para atualizar as informações.
+Outra opção seria utilizar Streams para checar as informações dos servidores. Assim as informações seriam atualizadas em tempo real, sem a necessidade de atualizar manualmente ou trigger de funções para atualizar as informações.
 
 ## Telas
 <p float="left">
