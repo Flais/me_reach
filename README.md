@@ -9,6 +9,7 @@ O MeReach é um aplicativo feito com Flutter. Ele permite o usuário monitorar u
 * Injeção de dependências;
 * Persistência de dados (local database)
 * Gerenciamento de estado com MOBX;
+* Ordenação dos listTiles;
 * Pull to refresh;
 * Timer para fazer refresh automático das informações;
 
