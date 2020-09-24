@@ -15,6 +15,7 @@ O MeReach é um aplicativo feito com Flutter. Ele permite o usuário monitorar u
 * Opção de escolher entre HTTP ou HTTPS (porta 80 ou 443);
 
 OBS: 
+
 Esse projeto foi feito com um timer e um pull to refresh por uma solicitação. O ideal seria fazelô-lo utilizando Streams, assim as informações seriam atualizadas em tempo real, sem a necessidade de atualizar manualmente ou triggers de funções para atualizar as informações.
 
 ## Telas
