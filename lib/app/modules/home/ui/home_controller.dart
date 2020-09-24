@@ -62,7 +62,7 @@ abstract class _HomeControllerBase with Store {
   getServersList() async {
     _getServersListUseCase.execute().then((value) {
       _updateCacheList(value);
-      setFirstEntranceInApp(false);
+      if (firstEntranceInApp) setFirstEntranceInApp(false);
     });
   }
 

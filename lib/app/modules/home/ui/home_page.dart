@@ -76,11 +76,9 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                   duration: Duration(
                     milliseconds: 300,
                   ),
-                  child: controller.listOfServers.length != 0
-                      ? _listView()
-                      : controller.firstEntranceInApp
-                          ? _loadingBody()
-                          : _emptyListBody(),
+                  child: controller.firstEntranceInApp
+                      ? _loadingBody()
+                      : _listView(),
                 );
               }),
             ),
@@ -122,76 +120,26 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   Widget _listView() {
     return Builder(
       builder: (BuildContext context) {
-        return Observer(
-          builder: (_) {
-            return LiquidPullToRefresh(
-              key: GlobalKey<LiquidPullToRefreshState>(),
-              onRefresh: () {
-                return _handleRefresh(context);
-              },
-              showChildOpacityTransition: false,
-              child: ImplicitlyAnimatedReorderableList<IServerEntity>(
-                physics: AlwaysScrollableScrollPhysics(),
-                controller: ScrollController(),
-                items: controller.listOfServers,
-                areItemsTheSame: (oldItem, newItem) =>
-                    oldItem.domain == newItem.domain,
-                onReorderFinished: (_, __, ___, newItems) {
-                  controller.reOrderServersList(newItems);
-                },
-                itemBuilder: (context, itemAnimation, item, index) {
-                  return index < controller.listOfServers.length
-                      ? Reorderable(
-                          key: ValueKey(item),
-                          builder: (context, dragAnimation, inDrag) {
-                            final serverTile = ServerTile(
-                              index: index,
-                              serverDomain:
-                                  controller.listOfServers[index].domain,
-                              isOnline:
-                                  controller.listOfServers[index].isOnline,
-                              latUpdate:
-                                  controller.listOfServers[index].lastUpdate,
-                              refreshServerStatus: () {
-                                controller.refreshServerStatus(
-                                  serverDomain:
-                                      controller.listOfServers[index].domain,
-                                );
-                              },
-                              removeServer: () {
-                                controller.removeServer(
-                                  serverDomain:
-                                      controller.listOfServers[index].domain,
-                                );
-                              },
-                            );
-
-                            return dragAnimation.value > 0
-                                ? serverTile
-                                : SizeFadeTransition(
-                                    animation: itemAnimation,
-                                    axis: Axis.horizontal,
-                                    axisAlignment: 1.0,
-                                    curve: Curves.ease,
-                                    child: serverTile,
-                                  );
-                          },
-                        )
-                      : Reorderable(
-                          key: ValueKey(item),
-                          child: Container(),
-                        );
-                },
-              ),
-            );
+        return LiquidPullToRefresh(
+          key: GlobalKey<LiquidPullToRefreshState>(),
+          onRefresh: () async {
+            return await _handleRefresh(context);
           },
+          showChildOpacityTransition: false,
+          child: Observer(
+            builder: (BuildContext context) {
+              return controller.listOfServers.length == 0
+                  ? _emptyListBody()
+                  : _notEmptyListView();
+            },
+          ),
         );
       },
     );
   }
 
-  Future<void> _handleRefresh(BuildContext context) {
-    return controller
+  Future<void> _handleRefresh(BuildContext context) async {
+    return await controller
         .getServersList()
         .then((value) => _showSnackBar(context, message: 'Atualizado!'));
   }
@@ -325,6 +273,56 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
           )
         ],
       ),
+    );
+  }
+
+  Widget _notEmptyListView() {
+    return ImplicitlyAnimatedReorderableList<IServerEntity>(
+      physics: AlwaysScrollableScrollPhysics(),
+      controller: ScrollController(),
+      items: controller.listOfServers,
+      areItemsTheSame: (oldItem, newItem) => oldItem.domain == newItem.domain,
+      onReorderFinished: (_, __, ___, newItems) {
+        controller.reOrderServersList(newItems);
+      },
+      itemBuilder: (context, itemAnimation, item, index) {
+        return index < controller.listOfServers.length
+            ? Reorderable(
+                key: ValueKey(item),
+                builder: (context, dragAnimation, inDrag) {
+                  final serverTile = ServerTile(
+                    index: index,
+                    serverDomain: controller.listOfServers[index].domain,
+                    isOnline: controller.listOfServers[index].isOnline,
+                    latUpdate: controller.listOfServers[index].lastUpdate,
+                    refreshServerStatus: () {
+                      controller.refreshServerStatus(
+                        serverDomain: controller.listOfServers[index].domain,
+                      );
+                    },
+                    removeServer: () {
+                      controller.removeServer(
+                        serverDomain: controller.listOfServers[index].domain,
+                      );
+                    },
+                  );
+
+                  return dragAnimation.value > 0
+                      ? serverTile
+                      : SizeFadeTransition(
+                          animation: itemAnimation,
+                          axis: Axis.horizontal,
+                          axisAlignment: 1.0,
+                          curve: Curves.ease,
+                          child: serverTile,
+                        );
+                },
+              )
+            : Reorderable(
+                key: ValueKey(item),
+                child: Container(),
+              );
+      },
     );
   }
 }
