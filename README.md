@@ -12,6 +12,7 @@ O MeReach é um aplicativo feito com Flutter. Ele permite o usuário monitorar u
 * Ordenação dos listTiles;
 * Pull to refresh;
 * Timer para fazer refresh automático das informações;
+* Opção de escolher entre HTTP ou HTTPS (porta 80 ou 443);
 
 ## Telas
 <p float="left">
