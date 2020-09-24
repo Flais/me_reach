@@ -20,7 +20,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends ModularState<HomePage, HomeController> {
   //use 'controller' variable to access controller
-
   @override
   void initState() {
     //This method triggers the periodic server status refresh
@@ -32,36 +31,32 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFD8E0EF),
-      body: getServersListFutureBuilder(),
+      body: _getServersListFutureBuilder(),
     );
   }
 
-  Widget getServersListFutureBuilder() {
-    final getServersList = controller.getServersList();
+  Widget _getServersListFutureBuilder() {
+    final _getServersList = controller.getServersList();
 
     return FutureBuilder(
-      future: getServersList,
-      // ignore: missing_return
+      future: _getServersList,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
-            throw UnimplementedError();
+            return _errorBody();
             break;
           case ConnectionState.waiting:
-            return Container();
+            return _loadingBody();
             break;
-          case ConnectionState.active:
-            throw UnimplementedError();
-            break;
-          case ConnectionState.done:
-            return body();
+          default:
+            return _loadedBody();
             break;
         }
       },
     );
   }
 
-  Widget body() {
+  Widget _loadedBody() {
     return SafeArea(
       child: Container(
         child: Column(
@@ -69,10 +64,10 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
             SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: addServerDomainTextField(),
+              child: _textField(),
             ),
             Expanded(
-              child: reorderableList(),
+              child: _listView(),
             ),
           ],
         ),
@@ -80,7 +75,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
     );
   }
 
-  Widget addServerDomainTextField() {
+  Widget _textField() {
     return Builder(
       builder: (BuildContext context) {
         return Observer(builder: (_) {
@@ -94,75 +89,12 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
             prefix: Row(
               children: [
                 SizedBox(width: 10),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                    iconEnabledColor: Colors.transparent,
-                    elevation: 0,
-                    isExpanded: false,
-                    value: controller.textFieldSecurityProtocolOption,
-                    icon: Icon(
-                      Icons.keyboard_arrow_down,
-                      size: 14,
-                      color: Colors.black,
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                        child: Text('Https://'),
-                        value: 'https://',
-                      ),
-                      DropdownMenuItem(
-                        child: Text('Http://'),
-                        value: 'http://',
-                      ),
-                    ],
-                    onChanged: (value) {
-                      controller.setTextFieldSecurityProtocolOption(value);
-                    },
-                  ),
-                ),
+                _dropDown(),
               ],
             ),
             suffix: Row(
               children: [
-                GestureDetector(
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.green,
-                  ),
-                  onTap: controller.isAddingNewDomain
-                      ? () {
-                          print('blocked');
-                        }
-                      : () async {
-                          controller.setIsAddingNewDomain(true);
-                          try {
-                            // Check if the serverDomain is valid
-                            if (!_validateServerDomain(controller
-                                .domainTextEditingController.text
-                                .trim())) throw InvalidDomainAddressException();
-
-                            await controller.addServer(
-                              serverDomain: controller
-                                      .textFieldSecurityProtocolOption +
-                                  'www.' +
-                                  controller.domainTextEditingController.text
-                                      .trim(),
-                            );
-                          } on InvalidDomainAddressException {
-                            _showSnackBar(
-                              context,
-                              message:
-                                  'Este não é um domínio válido. Por favor, utilize um válido.',
-                            );
-                          } on ServerAlreadyExistsException {
-                            _showSnackBar(
-                              context,
-                              message: 'Este domínio já foi adicionado.',
-                            );
-                          }
-                          controller.setIsAddingNewDomain(false);
-                        },
-                ),
+                _textFieldIconButton(),
                 SizedBox(width: 5),
               ],
             ),
@@ -172,7 +104,7 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
     );
   }
 
-  Widget reorderableList() {
+  Widget _listView() {
     return Builder(
       builder: (BuildContext context) {
         return Observer(
@@ -198,23 +130,17 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                           key: ValueKey(item),
                           builder: (context, dragAnimation, inDrag) {
                             final serverTile = ServerTile(
-                              serverDomain:
-                                  controller.listOfServers[index].domain,
                               index: index,
-                              isOnline:
-                                  controller.listOfServers[index].isOnline,
-                              latUpdate:
-                                  controller.listOfServers[index].lastUpdate,
+                              serverDomain: controller.listOfServers[index].domain,
+                              isOnline: controller.listOfServers[index].isOnline,
+                              latUpdate: controller.listOfServers[index].lastUpdate,
                               refreshServerStatus: () {
                                 controller.refreshServerStatus(
-                                  serverDomain:
-                                      controller.listOfServers[index].domain,
+                                  serverDomain: controller.listOfServers[index].domain,
                                 );
                               },
                               removeServer: () {
-                                controller.removeServer(
-                                  serverDomain:
-                                      controller.listOfServers[index].domain,
+                                controller.removeServer(serverDomain: controller.listOfServers[index].domain,
                                 );
                               },
                             );
@@ -265,9 +191,98 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
     Scaffold.of(context).showSnackBar(_snackBar);
   }
 
-  bool _validateServerDomain(String serverDomain) {
-    return RegExp(
-            r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$")
-        .hasMatch(serverDomain);
+  Widget _loadingBody() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(child: CircularProgressIndicator()),
+        ],
+      ),
+    );
+  }
+
+  Widget _errorBody() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(child: Text('Algo deu errado. Tente novamente mais tarde.')),
+        ],
+      ),
+    );
+  }
+
+  Widget _dropDown() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton(
+        iconEnabledColor: Colors.transparent,
+        elevation: 0,
+        isExpanded: false,
+        value: controller.textFieldSecurityProtocolOption,
+        icon: Icon(
+          Icons.keyboard_arrow_down,
+          size: 14,
+          color: Colors.black,
+        ),
+        items: [
+          DropdownMenuItem(
+            child: Text('Https://'),
+            value: 'https://',
+          ),
+          DropdownMenuItem(
+            child: Text('Http://'),
+            value: 'http://',
+          ),
+        ],
+        onChanged: (value) {
+          controller.setTextFieldSecurityProtocolOption(value);
+        },
+      ),
+    );
+  }
+
+  Widget _textFieldIconButton() {
+    return GestureDetector(
+      child: Icon(
+        Icons.add,
+        color: Colors.green,
+      ),
+      onTap: controller.isAddingNewDomain
+          ? () {
+        print('blocked');
+      }
+          : () async {
+        controller.setIsAddingNewDomain(true);
+        try {
+          // Check if the serverDomain is valid
+          if (!controller.validateServerDomain(controller
+              .domainTextEditingController.text
+              .trim())) throw InvalidDomainAddressException();
+
+          await controller.addServer(
+            serverDomain: controller
+                .textFieldSecurityProtocolOption +
+                'www.' +
+                controller.domainTextEditingController.text
+                    .trim(),
+          );
+        } on InvalidDomainAddressException {
+          _showSnackBar(
+            context,
+            message:
+            'Este não é um domínio válido. Por favor, utilize um válido.',
+          );
+        } on ServerAlreadyExistsException {
+          _showSnackBar(
+            context,
+            message: 'Este domínio já foi adicionado.',
+          );
+        }
+        controller.setIsAddingNewDomain(false);
+      },
+    );
   }
 }
