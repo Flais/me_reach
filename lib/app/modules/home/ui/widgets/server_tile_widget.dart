@@ -100,7 +100,11 @@ class ServerTile extends StatelessWidget {
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(message),
+          Flexible(
+            child: Text(
+              message,
+            ),
+          ),
         ],
       ),
       duration: Duration(milliseconds: 500),

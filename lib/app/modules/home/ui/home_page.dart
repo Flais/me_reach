@@ -131,16 +131,22 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                           builder: (context, dragAnimation, inDrag) {
                             final serverTile = ServerTile(
                               index: index,
-                              serverDomain: controller.listOfServers[index].domain,
-                              isOnline: controller.listOfServers[index].isOnline,
-                              latUpdate: controller.listOfServers[index].lastUpdate,
+                              serverDomain:
+                                  controller.listOfServers[index].domain,
+                              isOnline:
+                                  controller.listOfServers[index].isOnline,
+                              latUpdate:
+                                  controller.listOfServers[index].lastUpdate,
                               refreshServerStatus: () {
                                 controller.refreshServerStatus(
-                                  serverDomain: controller.listOfServers[index].domain,
+                                  serverDomain:
+                                      controller.listOfServers[index].domain,
                                 );
                               },
                               removeServer: () {
-                                controller.removeServer(serverDomain: controller.listOfServers[index].domain,
+                                controller.removeServer(
+                                  serverDomain:
+                                      controller.listOfServers[index].domain,
                                 );
                               },
                             );
@@ -180,8 +186,10 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            message,
+          Flexible(
+            child: Text(
+              message,
+            ),
           ),
         ],
       ),
@@ -245,43 +253,45 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
   }
 
   Widget _textFieldIconButton() {
-    return GestureDetector(
-      child: Icon(
-        Icons.add,
-        color: Colors.green,
-      ),
-      onTap: controller.isAddingNewDomain
-          ? () {
-        print('blocked');
-      }
-          : () async {
-        controller.setIsAddingNewDomain(true);
-        try {
-          // Check if the serverDomain is valid
-          if (!controller.validateServerDomain(controller
-              .domainTextEditingController.text
-              .trim())) throw InvalidDomainAddressException();
+    return Builder(
+      builder: (BuildContext context) {
+        return GestureDetector(
+          child: Icon(
+            Icons.add,
+            color: Colors.green,
+          ),
+          onTap: controller.isAddingNewDomain
+              ? () {
+                  print('blocked');
+                }
+              : () async {
+                  controller.setIsAddingNewDomain(true);
+                  try {
+                    // Check if the serverDomain is valid
+                    if (!controller.validateServerDomain(
+                        controller.domainTextEditingController.text.trim()))
+                      throw InvalidDomainAddressException();
 
-          await controller.addServer(
-            serverDomain: controller
-                .textFieldSecurityProtocolOption +
-                'www.' +
-                controller.domainTextEditingController.text
-                    .trim(),
-          );
-        } on InvalidDomainAddressException {
-          _showSnackBar(
-            context,
-            message:
-            'Este não é um domínio válido. Por favor, utilize um válido.',
-          );
-        } on ServerAlreadyExistsException {
-          _showSnackBar(
-            context,
-            message: 'Este domínio já foi adicionado.',
-          );
-        }
-        controller.setIsAddingNewDomain(false);
+                    await controller.addServer(
+                      serverDomain: controller.textFieldSecurityProtocolOption +
+                          'www.' +
+                          controller.domainTextEditingController.text.trim(),
+                    );
+                  } on InvalidDomainAddressException {
+                    _showSnackBar(
+                      context,
+                      message:
+                          'Este não é um domínio válido. Por favor, utilize um válido.',
+                    );
+                  } on ServerAlreadyExistsException {
+                    _showSnackBar(
+                      context,
+                      message: 'Este domínio já foi adicionado.',
+                    );
+                  }
+                  controller.setIsAddingNewDomain(false);
+                },
+        );
       },
     );
   }
