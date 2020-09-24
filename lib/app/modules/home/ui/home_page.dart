@@ -124,8 +124,13 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
       builder: (BuildContext context) {
         return Observer(
           builder: (_) {
+            final _refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
             return LiquidPullToRefresh(
+<<<<<<< HEAD
               key: GlobalKey<LiquidPullToRefreshState>(),
+=======
+              key: _refreshIndicatorKey,
+>>>>>>> master
               onRefresh: () {
                 return _handleRefresh(context);
               },
