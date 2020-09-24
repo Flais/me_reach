@@ -16,7 +16,7 @@ O MeReach é um aplicativo feito com Flutter. Ele permite o usuário monitorar u
 
 OBS: 
 
-Esse projeto foi feito com um timer e um pull to refresh por uma solicitação. O ideal seria fazelô-lo utilizando Streams, assim as informações seriam atualizadas em tempo real, sem a necessidade de atualizar manualmente ou triggers de funções para atualizar as informações.
+Outra opção seria utilizar Stream, assim as informações seriam atualizadas em tempo real, sem a necessidade de atualizar manualmente ou trigger de funções para atualizar as informações.
 
 ## Telas
 <p float="left">
