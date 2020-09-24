@@ -17,7 +17,6 @@ part 'home_controller.g.dart';
 class HomeController = _HomeControllerBase with _$HomeController;
 
 abstract class _HomeControllerBase with Store {
-
   //UseCases
   final _addServerUseCase = Modular.get<AddServerUseCase>();
   final _removeServerUseCase = Modular.get<RemoveServerUseCase>();
@@ -29,11 +28,11 @@ abstract class _HomeControllerBase with Store {
   final domainTextEditingController = TextEditingController();
   final animatedListKey = GlobalKey<AnimatedListState>();
   final scrollController = ScrollController();
-  final refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
 
   //Cache list variable
   @observable
-  ObservableList<IServerEntity> listOfServers = <IServerEntity>[].asObservable();
+  ObservableList<IServerEntity> listOfServers =
+      <IServerEntity>[].asObservable();
 
   //Widgets State Management
   @observable
@@ -52,11 +51,20 @@ abstract class _HomeControllerBase with Store {
     isAddingNewDomain = value;
   }
 
+  @observable
+  bool firstEntranceInApp = true;
+
+  @action
+  setFirstEntranceInApp(bool value) {
+    firstEntranceInApp = value;
+  }
+
   //General Methods
   getServersList() async {
-    _getServersListUseCase
-        .execute()
-        .then((value) => _updateCacheList(value));
+    _getServersListUseCase.execute().then((value) {
+      _updateCacheList(value);
+      setFirstEntranceInApp(false);
+    });
   }
 
   addServer({@required String serverDomain}) async {
@@ -65,13 +73,6 @@ abstract class _HomeControllerBase with Store {
         .then((value) => _updateCacheList(value));
 
     domainTextEditingController.text = '';
-
-    //Jump to the beginning of the list
-    scrollController.animateTo(
-      0,
-      duration: Duration(milliseconds: 700),
-      curve: Curves.easeIn,
-    );
   }
 
   removeServer({@required String serverDomain}) async {
@@ -107,7 +108,7 @@ abstract class _HomeControllerBase with Store {
 
   bool validateServerDomain(String serverDomain) {
     return RegExp(
-        r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$")
+            r"^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$")
         .hasMatch(serverDomain);
   }
 }

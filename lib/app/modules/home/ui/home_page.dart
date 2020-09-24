@@ -10,6 +10,7 @@ import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:me_reach/app/core/exceptions.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
+import 'package:me_reach/app/modules/home/ui/widgets/app_logo.dart';
 import 'package:me_reach/app/modules/home/ui/widgets/server_tile_widget.dart';
 import 'home_controller.dart';
 
@@ -62,12 +63,26 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
         child: Column(
           children: [
             SizedBox(height: 15),
+            AppLogo(
+              width: 200,
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: _textField(),
             ),
             Expanded(
-              child: _listView(),
+              child: Observer(builder: (_) {
+                return AnimatedSwitcher(
+                  duration: Duration(
+                    milliseconds: 300,
+                  ),
+                  child: controller.listOfServers.length != 0
+                      ? _listView()
+                      : controller.firstEntranceInApp
+                          ? _loadingBody()
+                          : _emptyListBody(),
+                );
+              }),
             ),
           ],
         ),
@@ -109,8 +124,9 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
       builder: (BuildContext context) {
         return Observer(
           builder: (_) {
+            final _refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
             return LiquidPullToRefresh(
-              key: controller.refreshIndicatorKey,
+              key: _refreshIndicatorKey,
               onRefresh: () {
                 return _handleRefresh(context);
               },
@@ -293,6 +309,23 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
                 },
         );
       },
+    );
+  }
+
+  Widget _emptyListBody() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Sua lista está vazia',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
