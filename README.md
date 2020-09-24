@@ -1,17 +1,22 @@
-# me_reach
+# MeReach App
 
-Me Reach.
+O MeReach é um aplicativo feito com Flutter. Ele permite o usuário monitorar uma lista de servidores, mostrando se os mesmos estão online ou não.
 
-## Getting Started
+## No MeReach você vai encontrar:
 
-This project is a starting point for a Flutter application.
+* Solid;
+* Clean Architecture (modificada para se trabalhar com aplicações mobile);
+* Injeção de dependências;
+* Persistência de dados (local database)
+* Gerenciamento de estado com MOBX;
+* Pull to refresh;
+* Timer para fazer refresh automático das informações;
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# me_reach
+## Telas
+<p float="left">
+  <img src="https://user-images.githubusercontent.com/38634046/94114010-21564f80-fe1e-11ea-9863-54303bddb64d.gif" height="500">
+  <img src="https://user-images.githubusercontent.com/38634046/94114054-2f0bd500-fe1e-11ea-8f01-a237cc56c945.gif" height="500">
+  <img src="https://user-images.githubusercontent.com/38634046/94114090-3f23b480-fe1e-11ea-8a9a-733a034cbe1b.gif" height="500">
+  <img src="https://user-images.githubusercontent.com/38634046/94114347-9cb80100-fe1e-11ea-9554-e86c52e62b6d.gif" height="500">
+  <img src="https://user-images.githubusercontent.com/38634046/94114806-37184480-fe1f-11ea-8185-d74741bfc02b.gif" height="500">
+</p>
