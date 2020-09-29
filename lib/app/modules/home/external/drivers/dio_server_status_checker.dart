@@ -8,7 +8,7 @@ class DioServerStatusChecker implements IServerStatusCheckerDriver {
       Response response = await Dio().get(serverDomain).timeout(Duration(seconds: 2));
       return response.statusCode == 200;
     } catch (_) {
-      print('Not connected');
+      print('$serverDomain Not connected');
       return false;
     }
   }
