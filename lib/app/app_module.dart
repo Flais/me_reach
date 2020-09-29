@@ -1,12 +1,9 @@
 import 'package:me_reach/app/utils/app_routes.dart';
-
 import 'app_controller.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter/material.dart';
 import 'package:me_reach/app/app_widget.dart';
 import 'package:me_reach/app/modules/home/ui/home_module.dart';
-
-import 'modules/home/external/services/hive_get_servers_list_local_datasource.dart';
 
 class AppModule extends MainModule {
   @override

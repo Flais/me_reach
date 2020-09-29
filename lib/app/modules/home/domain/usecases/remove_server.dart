@@ -3,7 +3,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:me_reach/app/app_controller.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/domain/repositories_interfaces/get_servers_list_repository_interface.dart';
-import 'package:me_reach/app/modules/home/infra/entities/server_entity.dart';
 
 class RemoveServerUseCase {
 

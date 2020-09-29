@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:me_reach/app/modules/home/domain/entities_interfaces/server_entity_interface.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/add_server.dart';
 import 'package:me_reach/app/modules/home/domain/usecases/get_servers_list.dart';
@@ -95,7 +93,7 @@ abstract class _HomeControllerBase with Store {
     const _periodicRefreshServersDuration = const Duration(minutes: 1);
     Timer.periodic(
         _periodicRefreshServersDuration,
-        (Timer t) => _getServersListUseCase
+        (_) => _getServersListUseCase
             .execute()
             .then((value) => _updateCacheList(value)));
   }
